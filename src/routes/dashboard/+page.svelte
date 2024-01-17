@@ -1,4 +1,28 @@
 <script>
+  import { onMount } from "svelte";
+  import { ToastContainer, FlatToast } from "svelte-toasts";
+
+  import { isAuthenticated, authenticateUser } from "../../utils/auth";
+  import { showToast } from "../../utils/toast";
+
+  onMount(() => {
+    if (!isAuthenticated()) {
+      location.href = "/signin";
+    } else {
+      let responseData = authenticateUser();
+      if (responseData.success) {
+        userProfile = responseData.data;
+      } else {
+        showToast("Failed", "Failed user", "error");
+        setTimeout(() => {
+          window.location.href = "/signin";
+        }, 1000);
+      }
+    }
+  });
+
+  let userProfile;
+
   export let data;
   let mainChartColors = {};
   let trafficChannelsChartColors = {};
@@ -1662,4 +1686,8 @@
       </div>
     </div>
   </div>
+
+  <ToastContainer let:data>
+    <FlatToast {data} />
+  </ToastContainer>
 </div>

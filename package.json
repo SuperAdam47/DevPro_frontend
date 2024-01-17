@@ -28,10 +28,13 @@
   "type": "module",
   "dependencies": {
     "@types/three": "^0.158.3",
+    "axios": "^1.6.5",
     "flowbite-svelte-icons": "^0.4.4",
+    "jsonwebtoken": "^9.0.2",
     "stripe": "^14.5.0",
     "svelte-router": "^3.0.0-alpha.2",
     "svelte-routing": "^2.5.0",
+    "svelte-toasts": "^1.1.2",
     "three": "^0.158.0"
   }
 }

@@ -1,7 +1,10 @@
 <script>
+  import { onMount } from "svelte";
+
+  import { isAuthenticated } from "../utils/auth";
   import { page } from "$app/stores";
 
-  let auth = true;
+  let auth = false;
 
   import logo from "$lib/images/svelte-logo.svg";
   import {
@@ -14,6 +17,12 @@
 
   import { Img, Button, Search } from "flowbite-svelte";
   import { MicrophoneSolid, SearchOutline } from "flowbite-svelte-icons";
+
+  onMount(() => {
+    if (isAuthenticated()) {
+      auth = true;
+    }
+  });
 </script>
 
 <header>
@@ -37,7 +46,7 @@
         <NavLi class="text-primary-1 text-lg font-medium " href="/about"
           >About</NavLi
         >
-        {#if auth}
+        {#if !auth}
           <NavLi class="text-primary-1 text-lg font-medium" href="/signin"
             >Sign In</NavLi
           >

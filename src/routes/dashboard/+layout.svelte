@@ -1,5 +1,12 @@
 <script>
-  import { Button } from "flowbite-svelte";
+  import { onMount } from "svelte";
+
+  import {
+    isAuthenticated,
+    setSession,
+    authenticateUser,
+  } from "../../utils/auth";
+  import { Button, Img } from "flowbite-svelte";
   import Sidebar from "./Sidebar.svelte";
   import {
     ThumbsUpSolid,
@@ -9,6 +16,23 @@
 
   import logo from "$lib/images/svelte-logo.svg";
   export let data;
+
+  onMount(() => {
+    if (isAuthenticated()) {
+      let responseData = authenticateUser();
+      if (responseData.success) {
+        userProfile = responseData.data;
+      }
+    }
+  });
+
+  let userProfile = {};
+
+  const handleSignOut = () => {
+    setSession();
+  };
+
+  let auth = false;
 
   let navActive = false;
 
@@ -603,11 +627,19 @@
                   data-dropdown-toggle="dropdown-2"
                 >
                   <span class="sr-only">Open user menu</span>
-                  <img
-                    class="w-8 h-8 rounded-full"
-                    src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
-                    alt="user photo"
-                  />
+                  {#if userProfile.image === undefined || userProfile.image === null}
+                    <img
+                      class="w-8 h-8 rounded-full"
+                      src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
+                      alt="user photo"
+                    />
+                  {:else}
+                    <Img
+                      class="w-8 h-8 rounded-full"
+                      src={userProfile.image}
+                      alt="user photo"
+                    />
+                  {/if}
                 </button>
               </div>
               <!-- Dropdown menu -->
@@ -617,13 +649,17 @@
               >
                 <div class="px-4 py-3" role="none">
                   <p class="text-sm text-gray-900 dark:text-white" role="none">
-                    Neil Sims
+                    {userProfile !== undefined || userProfile !== null
+                      ? userProfile.name
+                      : ""}
                   </p>
                   <p
                     class="text-sm font-medium text-gray-900 truncate dark:text-gray-300"
                     role="none"
                   >
-                    neil.sims@flowbite.com
+                    {userProfile !== undefined || userProfile !== null
+                      ? userProfile.email
+                      : ""}
                   </p>
                 </div>
                 <ul class="py-1" role="none">
@@ -651,6 +687,7 @@
                   <li>
                     <a
                       href="/"
+                      on:click={handleSignOut}
                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                       role="menuitem">Sign out</a
                     >
@@ -794,46 +831,48 @@
             <span class="flex-1 ms-3 whitespace-nowrap">FAQ </span>
           </a>
         </li>
-        <li>
-          <a
-            href="/signin"
-            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-          >
-            <svg
-              class="mx-auto mb-1 text-gray-500 w-7 h-7 dark:text-gray-400"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
+        {#if auth}
+          <li>
+            <a
+              href="/signin"
+              class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
             >
-              <path
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M1 8h11m0 0L8 4m4 4-4 4m4-11h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"
-              />
-            </svg>
-            <span class="flex-1 ms-3 whitespace-nowrap">Sign In</span>
-          </a>
-        </li>
-        <li>
-          <a
-            href="/signup"
-            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-          >
-            <svg
-              class="mx-auto mb-1 text-gray-500 w-7 h-7 dark:text-gray-400"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
+              <svg
+                class="mx-auto mb-1 text-gray-500 w-7 h-7 dark:text-gray-400"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M1 8h11m0 0L8 4m4 4-4 4m4-11h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"
+                />
+              </svg>
+              <span class="flex-1 ms-3 whitespace-nowrap">Sign In</span>
+            </a>
+          </li>
+          <li>
+            <a
+              href="/signup"
+              class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
             >
-              <path
-                d="M6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm-1.391 7.361.707-3.535a3 3 0 0 1 .82-1.533L7.929 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h4.259a2.975 2.975 0 0 1-.15-1.639ZM8.05 17.95a1 1 0 0 1-.981-1.2l.708-3.536a1 1 0 0 1 .274-.511l6.363-6.364a3.007 3.007 0 0 1 4.243 0 3.007 3.007 0 0 1 0 4.243l-6.365 6.363a1 1 0 0 1-.511.274l-3.536.708a1.07 1.07 0 0 1-.195.023Z"
-              />
-            </svg>
-            <span class="flex-1 ms-3 whitespace-nowrap">Sign Up</span>
-          </a>
-        </li>
+              <svg
+                class="mx-auto mb-1 text-gray-500 w-7 h-7 dark:text-gray-400"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm-1.391 7.361.707-3.535a3 3 0 0 1 .82-1.533L7.929 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h4.259a2.975 2.975 0 0 1-.15-1.639ZM8.05 17.95a1 1 0 0 1-.981-1.2l.708-3.536a1 1 0 0 1 .274-.511l6.363-6.364a3.007 3.007 0 0 1 4.243 0 3.007 3.007 0 0 1 0 4.243l-6.365 6.363a1 1 0 0 1-.511.274l-3.536.708a1.07 1.07 0 0 1-.195.023Z"
+                />
+              </svg>
+              <span class="flex-1 ms-3 whitespace-nowrap">Sign Up</span>
+            </a>
+          </li>
+        {/if}
       </ul>
       <div
         class="absolute bottom-0 left-0 justify-center hidden w-full p-4 space-x-4 bg-white lg:flex dark:bg-primary-0"

@@ -6,11 +6,8 @@
   import bg_3 from "$lib/images/message/bg-3.svg";
 
   import { Img, Button, Search } from "flowbite-svelte";
-
   import { Dropdown, DropdownItem } from "flowbite-svelte";
-
   import { ChevronDownSolid } from "flowbite-svelte-icons";
-
   import { MicrophoneSolid, SearchOutline } from "flowbite-svelte-icons";
 
   // import { page } from "$app/stores";
@@ -19,6 +16,7 @@
     ChevronLeftOutline,
     ChevronRightOutline,
   } from "flowbite-svelte-icons";
+  import Product from "./product.svelte";
 
   // $: activeUrl = $page.url.searchParams.get("page");
   let pages = [
@@ -139,23 +137,16 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-4 gap-4">
-      <Img src={bg_1} alt="sample 1" />
-      <Img src={bg_2} alt="sample 1" />
-      <Img src={bg_3} alt="sample 1" />
-      <Img src={bg_1} alt="sample 1" />
-      <Img src={bg_1} alt="sample 1" />
-      <Img src={bg_1} alt="sample 1" />
-      <Img src={bg_1} alt="sample 1" />
-      <Img src={bg_1} alt="sample 1" />
-      <Img src={bg_1} alt="sample 1" />
-      <Img src={bg_1} alt="sample 1" />
-      <Img src={bg_1} alt="sample 1" />
-      <Img src={bg_1} alt="sample 1" />
-      <Img src={bg_1} alt="sample 1" />
-      <Img src={bg_1} alt="sample 1" />
-      <Img src={bg_1} alt="sample 1" />
-      <Img src={bg_1} alt="sample 1" />
+    <div
+      class="grid xl:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-8 place-items-center"
+    >
+      <Product />
+      <Product />
+      <Product />
+      <Product />
+      <Product />
+      <Product />
+      <Product />
     </div>
 
     <div class="flex justify-center mt-5">

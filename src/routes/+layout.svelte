@@ -6,9 +6,13 @@
   import { Select, Dropdown, DropdownItem } from "flowbite-svelte";
   import { ChevronDownSolid } from "flowbite-svelte-icons";
   import svg_US from "$lib/images/svg-US.svg";
+
+  // import { Provider } from "svelte-redux-store";
+  // import { store } from "../store";
 </script>
 
 <div class="app">
+  <!-- <Provider {store}> -->
   <Header />
 
   <main>
@@ -16,6 +20,7 @@
   </main>
 
   <Footer />
+  <!-- </Provider> -->
 </div>
 
 <style>

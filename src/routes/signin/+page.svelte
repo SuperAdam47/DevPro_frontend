@@ -12,9 +12,19 @@
     if (isAuthenticated()) {
       location.href = "/dashboard";
     }
+    let userData = localStorage.getItem("userData");
+    if (userData !== null && userData !== "") {
+      formData = JSON.parse(userData);
+    }
   });
 
-  const formData = {
+  let isRememberMe = false;
+
+  const handleRememberMe = () => {
+    isRememberMe = !isRememberMe;
+  };
+
+  let formData = {
     email: "",
     password: "",
   };
@@ -31,6 +41,16 @@
 
         setSession(data.token);
         showToast("Success", "Signin Success", "success");
+        if (isRememberMe) {
+          localStorage.setItem("isRememberMe", "true");
+          let useData = {
+            email: formData.email,
+            password: formData.password,
+          };
+          localStorage.setItem("userData", JSON.stringify(useData));
+        } else {
+          localStorage.setItem("isRememberMe", "false");
+        }
 
         setTimeout(() => {
           window.location.href = "/dashboard";
@@ -87,7 +107,9 @@
         />
       </Label>
       <div class="flex items-start">
-        <Checkbox class="text-white">Remember me</Checkbox>
+        <Checkbox class="text-white" on:change={handleRememberMe}
+          >Remember me</Checkbox
+        >
         <a
           href="/forgotpassword"
           class="ml-auto text-sm text-primary-1 hover:underline dark:text-primary-700"

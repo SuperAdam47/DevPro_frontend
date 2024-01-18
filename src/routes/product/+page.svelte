@@ -1,14 +1,18 @@
 <script>
+  import { onMount } from "svelte";
   import bg_banner from "$lib/images/bg-search.png";
 
   import bg_1 from "$lib/images/message/bg-1.svg";
   import bg_2 from "$lib/images/message/bg-2.svg";
   import bg_3 from "$lib/images/message/bg-3.svg";
 
+  import { ToastContainer, FlatToast } from "svelte-toasts";
+
   import { Img, Button, Search } from "flowbite-svelte";
   import { Dropdown, DropdownItem } from "flowbite-svelte";
   import { ChevronDownSolid } from "flowbite-svelte-icons";
   import { MicrophoneSolid, SearchOutline } from "flowbite-svelte-icons";
+  import axios from "axios";
 
   // import { page } from "$app/stores";
   import { Pagination } from "flowbite-svelte";
@@ -17,6 +21,17 @@
     ChevronRightOutline,
   } from "flowbite-svelte-icons";
   import Product from "./product.svelte";
+
+  import { BASE_URL, productCategory, grade } from "../../utils/constants";
+
+  onMount(() => {
+    getProducts(`${BASE_URL}/protected/product`);
+  });
+
+  let products = [];
+  let indexGrade = -1;
+  let indexCategoryProduct = -1;
+  let searchText = "";
 
   // $: activeUrl = $page.url.searchParams.get("page");
   let pages = [
@@ -49,12 +64,53 @@
     alert("Next btn clicked. Make a call to your server to fetch data.");
   };
 
-  //
-
-  let searchText = "UI Artist";
   function handleVoiceBtn() {
     alert("You clicked voice button");
   }
+
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      getProductsBySearch();
+    }
+  };
+
+  const getProducts = (url) => {
+    axios
+      .get(url)
+      .then((response) => {
+        console.log(response.data);
+        products = response.data;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  const getProductsByCategory = (index) => {
+    console.log(index);
+    indexCategoryProduct = index;
+    indexGrade = -1;
+    searchText = "";
+    getProducts(
+      `${BASE_URL}/protected/product?category=${indexCategoryProduct}`
+    );
+  };
+
+  const getProductsByGrade = (index) => {
+    console.log(index);
+    indexCategoryProduct = -1;
+    indexGrade = index;
+    searchText = "";
+    getProducts(`${BASE_URL}/protected/product?grade=${indexGrade}`);
+  };
+
+  const getProductsBySearch = () => {
+    searchText = searchText.trim();
+    if (searchText.length) {
+      indexCategoryProduct = -1;
+      indexGrade = -1;
+      getProducts(`${BASE_URL}/protected/product?skill=${searchText}`);
+    }
+  };
 </script>
 
 <svelte:head>
@@ -73,44 +129,56 @@
         <Search
           size="lg"
           class="flex  items-center"
-          placeholder="Search Freelancers.."
+          placeholder="Search Products.."
+          on:keypress={handleKeyPress}
+          bind:value={searchText}
         >
           <button type="button" on:click={handleVoiceBtn} class="outline-none">
             <MicrophoneSolid class="w-4 h-4 mr-2" />
           </button>
         </Search>
-        <Button size="sm" class="!bg-primary-1 text-lg">
+        <Button
+          size="sm"
+          class="!bg-primary-1 text-lg"
+          on:click={getProductsBySearch}
+        >
           <SearchOutline class="w-5 h-5 mr-2 -ml-1" />
           Search
         </Button>
       </form>
     </div>
 
-    <p class="text-2xl font-semibold ml-4">Search for "{searchText}"</p>
+    <p class="text-2xl font-semibold ml-4">
+      {searchText && searchText.trim().length > 0
+        ? `Search for "${searchText}"`
+        : ""}
+    </p>
 
     <div class="grid grid-cols-4 max-w-xl my-3 mb-6">
       <div>
-        <Button class="bg-primary-1  text-lg"
-          >Category<ChevronDownSolid
-            class="w-3 h-3 ml-2 text-white  dark:text-white"
-          /></Button
-        >
+        <Button class="bg-primary-1  text-lg">
+          Category
+          <ChevronDownSolid class="w-3 h-3 ms-2 text-white dark:text-white" />
+        </Button>
         <Dropdown>
-          <DropdownItem>UX/UI designer</DropdownItem>
-          <DropdownItem>Web Developement</DropdownItem>
-          <DropdownItem>Mobile Development</DropdownItem>
-          <DropdownItem>Roblox Development</DropdownItem>
+          {#each productCategory as item, index}
+            <DropdownItem on:click={() => getProductsByCategory(index)}>
+              {item}
+            </DropdownItem>
+          {/each}
         </Dropdown>
       </div>
       <div>
-        <Button class="bg-primary-1 text-lg"
-          >Pricing<ChevronDownSolid
-            class="w-3 h-3 ml-2 text-white dark:text-white"
-          /></Button
-        >
+        <Button class="bg-primary-1 text-lg">
+          Pricing
+          <ChevronDownSolid class="w-3 h-3 ml-2 text-white dark:text-white" />
+        </Button>
         <Dropdown>
-          <DropdownItem>UX/UI designer</DropdownItem>
-          <DropdownItem>Web Developement</DropdownItem>
+          {#each grade as grade, index}
+            <DropdownItem on:click={() => getProductsByGrade(index)}>
+              {grade}
+            </DropdownItem>
+          {/each}
         </Dropdown>
       </div>
       <div>
@@ -140,13 +208,15 @@
     <div
       class="grid xl:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-8 place-items-center"
     >
-      <Product />
-      <Product />
-      <Product />
-      <Product />
-      <Product />
-      <Product />
-      <Product />
+      <Product product="asd" index={1} />
+      <Product product="asd" index={1} />
+      <Product product="asd" index={1} />
+      <Product product="asd" index={1} />
+      <Product product="asd" index={1} />
+      <Product product="asd" index={1} />
+      {#each products as product, index}
+        <Product {product} {index} />
+      {/each}
     </div>
 
     <div class="flex justify-center mt-5">

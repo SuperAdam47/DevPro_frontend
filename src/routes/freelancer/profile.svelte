@@ -1,6 +1,6 @@
 <script>
   import { Img, Button, Search } from "flowbite-svelte";
-  import productImage from "$lib/images/product.png";
+  import profileImage from "$lib/images/product.png";
   import proifleIcon from "$lib/images/profile-icon.svg";
   import fireSolidIcon from "$lib/images/fire-solid.svg";
   // import topRatedIcon from "$lib/images/top-rated.svg";
@@ -11,6 +11,10 @@
     MessagesOutline,
     FireSolid,
   } from "flowbite-svelte-icons";
+
+  export let profile;
+  export let index;
+
   let isHover = false;
 
   const handleMouse = (event) => {
@@ -30,7 +34,7 @@
 >
   <div class="w-full relative">
     <div class="w-full">
-      <Img src={productImage} class="rounded-t-xl w-full" />
+      <Img src={profileImage} class="rounded-t-xl w-full" />
       <div class="absolute top-1 p-4 flex justify-between w-full">
         <HeartOutline
           class="left-[16px] top-[8px] text-white w-[32px] h-[24px] "
@@ -86,7 +90,7 @@
     corrections.
   </div>
   <div class="p-4 flex justify-between items-center w-full">
-    <span class="text-[10px] product-name"> {isHover ? "" : "@kingtran"}</span>
+    <span class="text-[10px]"> {isHover ? "" : "@kingtran"}</span>
     <div class="flex flex-row gap-2">
       <div
         class="button bg-[#363636] w-[32px] h-[26px] rounded-[5px] flex justify-center items-center"

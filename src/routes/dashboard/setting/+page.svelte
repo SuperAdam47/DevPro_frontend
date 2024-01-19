@@ -1,6 +1,96 @@
 <script>
-  export let data;
+  import { onMount } from "svelte";
+  import axios from "axios";
+  import { ToastContainer, FlatToast } from "svelte-toasts";
+  import { showToast } from "../../../utils/toast";
+  import { BASE_URL } from "../../../utils/constants";
+  import { isAuthenticated } from "../../../utils/auth";
+
+  onMount(() => {
+    if (!isAuthenticated()) {
+      location.href = "/signin";
+    } else {
+      axios
+        .get(`${BASE_URL}/protected`)
+        .then((response) => {
+          userProfile = response.data;
+          mapObject(userProfile, generalInformation);
+          console.log(generalInformation);
+          console.log(userProfile);
+        })
+        .catch((error) => {
+          console.log(typeof error.response.message);
+          if (typeof error.response.data.message === "string") {
+            showToast("Failed", error.response.data.message, "error");
+          } else {
+            showToast("Failed", error.response.data.error, "error");
+          }
+          setTimeout(() => {
+            location.href = "/signin";
+          }, 1000);
+        });
+    }
+  });
+
+  const mapObject = (fromObject, toObject) => {
+    for (let key in fromObject) {
+      toObject[key] = fromObject[key];
+    }
+  };
+
+  // export let data;
+
+  let userProfile = {};
+
+  let generalInformation = {
+    first_name: "",
+    last_name: "",
+    country: "",
+    city: "",
+    address: "",
+    email: "",
+    phoneNumber: "",
+    birthday: "",
+    organization: "",
+    role: "",
+    department: "",
+    zipCode: "",
+  };
+
+  let passwordInformation = {
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  };
+
+  const sendRequest = (url, formData) => {
+    axios
+      .post(url, formData)
+      .then((response) => {
+        userProfile = response.data;
+        showToast("Success", "Saved Successfully", "success");
+      })
+      .catch((error) => {
+        console.log(error);
+        showToast("Failed", "Failed Request", "error");
+      });
+  };
+
+  const handleSubmitGeneralInformation = () => {
+    console.log(generalInformation);
+    sendRequest(`${BASE_URL}/user/general`, generalInformation);
+  };
+  const handleSubmitPasswordInformation = () => {
+    console.log(passwordInformation);
+    console.log(generalInformation.first_name);
+    sendRequest(`${BASE_URL}/user/password`, passwordInformation);
+  };
 </script>
+
+<svelte:head>
+  <title>DevPro - Dashboard - Settings</title>
+  <meta name="description" content="Svelte demo app" />
+</svelte:head>
 
 <div
   class="grid grid-cols-1 px-4 pt-6 xl:grid-cols-3 xl:gap-4 dark:bg-primary-0"
@@ -506,35 +596,37 @@
       <h3 class="mb-4 text-xl font-semibold dark:text-white">
         General information
       </h3>
-      <form action="#">
+      <form on:submit|preventDefault={handleSubmitGeneralInformation}>
         <div class="grid grid-cols-6 gap-6">
           <div class="col-span-6 sm:col-span-3">
             <label
-              for="first-name"
+              for="first_name"
               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >First Name</label
             >
             <input
               type="text"
-              name="first-name"
-              id="first-name"
+              name="first_name"
+              id="first_name"
               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="Bonnie"
+              bind:value={generalInformation.first_name}
               required
             />
           </div>
           <div class="col-span-6 sm:col-span-3">
             <label
-              for="last-name"
+              for="last_name"
               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >Last Name</label
             >
             <input
               type="text"
-              name="last-name"
-              id="last-name"
+              name="last_name"
+              id="last_name"
               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="Green"
+              bind:value={generalInformation.last_name}
               required
             />
           </div>
@@ -550,6 +642,7 @@
               id="country"
               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="United States"
+              bind:value={generalInformation.country}
               required
             />
           </div>
@@ -565,6 +658,7 @@
               id="city"
               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="e.g. San Francisco"
+              bind:value={generalInformation.city}
               required
             />
           </div>
@@ -580,6 +674,7 @@
               id="address"
               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="e.g. California"
+              bind:value={generalInformation.address}
               required
             />
           </div>
@@ -595,6 +690,7 @@
               id="email"
               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="example@company.com"
+              bind:value={generalInformation.email}
               required
             />
           </div>
@@ -610,6 +706,7 @@
               id="phone-number"
               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="e.g. +(12)3456 789"
+              bind:value={generalInformation.phoneNumber}
               required
             />
           </div>
@@ -620,11 +717,12 @@
               >Birthday</label
             >
             <input
-              type="number"
+              type="date"
               name="birthday"
               id="birthday"
               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="15/08/1990"
+              bind:value={generalInformation.birthday}
               required
             />
           </div>
@@ -640,6 +738,7 @@
               id="organization"
               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="Company Name"
+              bind:value={generalInformation.organization}
               required
             />
           </div>
@@ -655,6 +754,7 @@
               id="role"
               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="React Developer"
+              bind:value={generalInformation.role}
               required
             />
           </div>
@@ -670,6 +770,7 @@
               id="department"
               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="Development"
+              bind:value={generalInformation.department}
               required
             />
           </div>
@@ -685,14 +786,17 @@
               id="zip-code"
               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="123456"
+              bind:value={generalInformation.zipCode}
               required
             />
           </div>
           <div class="col-span-6 sm:col-full">
             <button
               class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-1 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-              type="submit">Save all</button
+              type="submit"
             >
+              Save all
+            </button>
           </div>
         </div>
       </form>
@@ -703,7 +807,7 @@
       <h3 class="mb-4 text-xl font-semibold dark:text-white">
         Password information
       </h3>
-      <form action="#">
+      <form on:submit|preventDefault={handleSubmitPasswordInformation}>
         <div class="grid grid-cols-6 gap-6">
           <div class="col-span-6 sm:col-span-3">
             <label
@@ -712,11 +816,12 @@
               >Current password</label
             >
             <input
-              type="text"
+              type="password"
               name="current-password"
               id="current-password"
               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="••••••••"
+              bind:value={passwordInformation.currentPassword}
               required
             />
           </div>
@@ -733,6 +838,7 @@
               id="password"
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="••••••••"
+              bind:value={passwordInformation.newPassword}
               required
             />
             <div
@@ -810,19 +916,22 @@
               >Confirm password</label
             >
             <input
-              type="text"
+              type="password"
               name="confirm-password"
               id="confirm-password"
               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="••••••••"
+              bind:value={passwordInformation.confirmPassword}
               required
             />
           </div>
           <div class="col-span-6 sm:col-full">
             <button
               class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-1 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-              type="submit">Save all</button
+              type="submit"
             >
+              Save all
+            </button>
           </div>
         </div>
       </form>
@@ -1162,4 +1271,7 @@
       </div>
     </div>
   </div>
+  <ToastContainer let:data>
+    <FlatToast {data} />
+  </ToastContainer>
 </div>

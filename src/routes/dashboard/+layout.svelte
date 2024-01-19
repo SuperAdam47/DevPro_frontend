@@ -1,5 +1,7 @@
 <script>
   import { onMount } from "svelte";
+  import axios from "axios";
+  import { BASE_URL } from "../../utils/constants";
 
   import {
     isAuthenticated,
@@ -19,10 +21,21 @@
 
   onMount(() => {
     if (isAuthenticated()) {
-      let responseData = authenticateUser();
-      if (responseData.success) {
-        userProfile = responseData.data;
-      }
+      // console.log(authenticateUser());
+      // responseData = authenticateUser();
+      // if (responseData.success) {
+      //   userProfile = responseData.data;
+      //   console.log(userProfile);
+      // }
+      axios
+        .get(`${BASE_URL}/protected`)
+        .then((response) => {
+          userProfile = response.data;
+          auth = true;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
   });
 
@@ -649,8 +662,9 @@
               >
                 <div class="px-4 py-3" role="none">
                   <p class="text-sm text-gray-900 dark:text-white" role="none">
-                    {userProfile.name !== undefined || userProfile.name !== null
-                      ? userProfile.name
+                    {userProfile.full_name !== undefined ||
+                    userProfile.full_name !== null
+                      ? userProfile.full_name
                       : "asd"}
                   </p>
                   <p
@@ -832,7 +846,7 @@
             <span class="flex-1 ms-3 whitespace-nowrap">FAQ </span>
           </a>
         </li>
-        {#if auth}
+        {#if !auth}
           <li>
             <a
               href="/signin"

@@ -10,7 +10,15 @@
 
   onMount(() => {
     if (isAuthenticated()) {
-      location.href = "/dashboard";
+      axios
+        .get(`${BASE_URL}/protected`)
+        .then((response) => {
+          console.log(response.data);
+          location.href = "/dashboard";
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+        });
     }
   });
 
@@ -32,6 +40,12 @@
   };
 
   const handleSubmit = () => {
+    const requestBody = {
+      first_name: formData.name.split(" ").map((item) => item.trim())[0],
+      last_name: formData.name.split(" ").map((item) => item.trim())[1],
+      email: formData.email,
+      password: formData.password,
+    };
     if (formData.password !== confirmPassword) {
       showToast("Warning", "Passwords must Match", "warning");
     } else if (!isAgreed) {
@@ -41,9 +55,9 @@
         "warning"
       );
     } else {
-      console.log(formData);
+      console.log(requestBody);
       axios
-        .post(`${BASE_URL}/user/register`, formData, { headers })
+        .post(`${BASE_URL}/user/register`, requestBody, { headers })
         .then((response) => {
           console.log(response);
           const data = response.data;
@@ -72,7 +86,12 @@
   };
 </script>
 
-<div class="flex justify-center items-center my-32">
+<svelte:head>
+  <title>DevPro - SignUp</title>
+  <meta name="description" content="Svelte demo app" />
+</svelte:head>
+
+<section class="flex justify-center items-center my-32">
   <Card class="w-full max-w-xl bg-primary-3 ">
     <form
       class="flex flex-col space-y-6"
@@ -84,11 +103,12 @@
         connecting today.
       </h2>
       <Label class="space-y-2">
-        <p class="text-xl font-medium my-2 text-white">User Name</p>
+        <p class="text-xl font-medium my-2 text-white">Full Name</p>
         <Input
           class="text-xl"
           type="text"
           name="name"
+          placeholder="Lewis Hamilton"
           bind:value={formData.name}
           required
         />
@@ -147,7 +167,7 @@
       <FlatToast {data} />
     </ToastContainer>
   </Card>
-</div>
+</section>
 
 <style>
 </style>

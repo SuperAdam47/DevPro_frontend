@@ -66,7 +66,7 @@
 </script>
 
 <svelte:head>
-  <title>FAQ</title>
+  <title>DevPro - Dashboard - Profile</title>
   <meta name="description" content="Svelte demo app" />
 </svelte:head>
 

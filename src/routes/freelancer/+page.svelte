@@ -22,7 +22,7 @@
   } from "flowbite-svelte-icons";
   import Profile from "./profile.svelte";
 
-  import { BASE_URL, roleCategory, grade } from "../../utils/constants";
+  import { BASE_URL, Role_Category } from "../../utils/constants";
 
   onMount(() => {
     getProfiles(`${BASE_URL}/protected/product`);
@@ -103,7 +103,7 @@
 </script>
 
 <svelte:head>
-  <title>Search</title>
+  <title>DevPro - Freelancer</title>
   <meta name="description" content="Svelte demo app" />
 </svelte:head>
 
@@ -150,7 +150,7 @@
           <ChevronDownSolid class="w-3 h-3 ms-2 text-white dark:text-white" />
         </Button>
         <Dropdown>
-          {#each roleCategory as item, index}
+          {#each Role_Category as item, index}
             <DropdownItem on:click={() => getProfilesByCategory(index)}>
               {item}
             </DropdownItem>

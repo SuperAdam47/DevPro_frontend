@@ -12,18 +12,19 @@ export const setSession = (authToken) => {
 }
 
 export const authenticateUser = () => {
-    axios.get(`${BASE_URL}/user/me`).then((response) => {
+    axios.get(`${BASE_URL}/protected`).then((response) => {
         let data = {
             success: true,
             data: response.data
         };
+        // console.log(data);
         return data;
     }).catch((error) => {
         let data = {
             success: false,
             data: error.response.data
         };
-        return error;
+        return data;
     })
 }
 

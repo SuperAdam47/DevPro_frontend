@@ -9,11 +9,19 @@
 
   onMount(() => {
     if (isAuthenticated()) {
-      location.href = "/dashboard";
+      axios
+        .get(`${BASE_URL}/protected`)
+        .then((response) => {
+          console.log(response.data);
+          location.href = "/dashboard";
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+        });
     }
     let userData = localStorage.getItem("userData");
     if (userData !== null && userData !== "") {
-      formData["email"] = JSON.parse(userData)["email"];
+      formData.email = JSON.parse(userData)["email"];
     }
   });
 
@@ -44,17 +52,27 @@
         .then((response) => {
           let data = response.data;
           console.log(data);
+          showToast("Success", "Sending Successfully", "success");
         })
         .catch((error) => {
           console.log();
+          showToast("Failed", "Sending Failed", "error");
         });
     }
   };
 </script>
 
+<svelte:head>
+  <title>DevPro - ForgotPassword</title>
+  <meta name="description" content="Svelte demo app" />
+</svelte:head>
+
 <div class="flex justify-center items-center mt-32">
   <Card class="w-full max-w-lg bg-primary-3 ">
-    <form class="flex flex-col space-y-6" on:submit={handleSubmit}>
+    <form
+      class="flex flex-col space-y-6"
+      on:submit|preventDefault={handleSubmit}
+    >
       <h1 class=" font-medium text-white dark:text-white">Forgot Password?</h1>
       <h2>
         Don't fret! Just type in your email and we will send you a code to reset
@@ -67,6 +85,7 @@
           type="email"
           name="email"
           placeholder="name@gmail.com"
+          bind:value={formData.email}
           required
         />
       </Label>

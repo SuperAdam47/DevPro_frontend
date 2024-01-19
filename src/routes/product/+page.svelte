@@ -22,7 +22,7 @@
   } from "flowbite-svelte-icons";
   import Product from "./product.svelte";
 
-  import { BASE_URL, productCategory, grade } from "../../utils/constants";
+  import { BASE_URL, Product_Category, Grade } from "../../utils/constants";
 
   onMount(() => {
     getProducts(`${BASE_URL}/protected/product`);
@@ -161,7 +161,7 @@
           <ChevronDownSolid class="w-3 h-3 ms-2 text-white dark:text-white" />
         </Button>
         <Dropdown>
-          {#each productCategory as item, index}
+          {#each Product_Category as item, index}
             <DropdownItem on:click={() => getProductsByCategory(index)}>
               {item}
             </DropdownItem>
@@ -174,7 +174,7 @@
           <ChevronDownSolid class="w-3 h-3 ml-2 text-white dark:text-white" />
         </Button>
         <Dropdown>
-          {#each grade as grade, index}
+          {#each Grade as grade, index}
             <DropdownItem on:click={() => getProductsByGrade(index)}>
               {grade}
             </DropdownItem>

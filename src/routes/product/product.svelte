@@ -84,7 +84,7 @@
     </div>
   </div>
   <div
-    class="text-[13px] my-[8px] mx-[16px] leading-4 font-['hammersmith one']"
+    class="text-[13px] my-[8px] mx-[16px] leading-4 font-['hammersmith one'] h-[32px] line-clamp-2"
   >
     I will design a full website using the necessary tools, including
     corrections.

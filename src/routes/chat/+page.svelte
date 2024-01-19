@@ -33,7 +33,7 @@
 </script>
 
 <svelte:head>
-  <title>FAQ</title>
+  <title>DevPro - Chat</title>
   <meta name="description" content="Svelte demo app" />
 </svelte:head>
 

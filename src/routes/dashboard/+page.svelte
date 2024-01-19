@@ -1,7 +1,8 @@
 <script>
   import { onMount } from "svelte";
   import { ToastContainer, FlatToast } from "svelte-toasts";
-
+  import axios from "axios";
+  import { BASE_URL } from "../../utils/constants";
   import { isAuthenticated, authenticateUser } from "../../utils/auth";
   import { showToast } from "../../utils/toast";
 
@@ -9,15 +10,23 @@
     if (!isAuthenticated()) {
       location.href = "/signin";
     } else {
-      let responseData = authenticateUser();
-      if (responseData.success) {
-        userProfile = responseData.data;
-      } else {
-        showToast("Failed", "Failed user", "error");
-        setTimeout(() => {
-          window.location.href = "/signin";
-        }, 1000);
-      }
+      axios
+        .get(`${BASE_URL}/protected`)
+        .then((response) => {
+          userProfile = response.data;
+          console.log(userProfile);
+        })
+        .catch((error) => {
+          console.log(typeof error.response.message);
+          if (typeof error.response.data.message === "string") {
+            showToast("Failed", error.response.data.message, "error");
+          } else {
+            showToast("Failed", error.response.data.error, "error");
+          }
+          setTimeout(() => {
+            location.href = "/signin";
+          }, 1000);
+        });
     }
   });
 
@@ -625,6 +634,11 @@
     },
   };
 </script>
+
+<svelte:head>
+  <title>DevPro - Dashboard</title>
+  <meta name="description" content="Svelte demo app" />
+</svelte:head>
 
 <div>
   <button

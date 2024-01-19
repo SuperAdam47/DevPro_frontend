@@ -1,7 +1,10 @@
 <script>
   import { onMount } from "svelte";
 
-  import { isAuthenticated } from "../utils/auth";
+  import axios from "axios";
+  import { BASE_URL } from "../utils/constants";
+
+  import { isAuthenticated, authenticateUser } from "../utils/auth";
   import { page } from "$app/stores";
 
   let auth = false;
@@ -18,9 +21,19 @@
   import { Img, Button, Search } from "flowbite-svelte";
   import { MicrophoneSolid, SearchOutline } from "flowbite-svelte-icons";
 
+  let userProfile = {};
+
   onMount(() => {
     if (isAuthenticated()) {
-      auth = true;
+      axios
+        .get(`${BASE_URL}/protected`)
+        .then((response) => {
+          userProfile = response.data;
+          auth = true;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
   });
 </script>

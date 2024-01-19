@@ -10,7 +10,15 @@
 
   onMount(() => {
     if (isAuthenticated()) {
-      location.href = "/dashboard";
+      axios
+        .get(`${BASE_URL}/protected`)
+        .then((response) => {
+          console.log(response.data);
+          location.href = "/dashboard";
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+        });
     }
     let userData = localStorage.getItem("userData");
     if (userData !== null && userData !== "") {
@@ -73,6 +81,11 @@
       });
   };
 </script>
+
+<svelte:head>
+  <title>DevPro - SignIn</title>
+  <meta name="description" content="Svelte demo app" />
+</svelte:head>
 
 <div class="flex justify-center items-center my-32">
   <Card class="w-full max-w-lg bg-primary-3 ">

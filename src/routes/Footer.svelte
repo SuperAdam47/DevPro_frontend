@@ -52,7 +52,6 @@
       </p>
       <input
         type="email"
-        id="email"
         placeholder="Enter your email"
         class="bg-white border border-gray-300 text-lg text-gray-900 md:w-64 mb-1 md:mb-0 md:mr-4 rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-1.5 pl-4 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
         required

@@ -7,6 +7,7 @@
   import bg_3 from "$lib/images/message/bg-3.svg";
 
   import { ToastContainer, FlatToast } from "svelte-toasts";
+  import { showToast } from "../../utils/toast";
 
   import { Img, Button, Search } from "flowbite-svelte";
   import { Dropdown, DropdownItem } from "flowbite-svelte";
@@ -25,7 +26,19 @@
   import { BASE_URL, Product_Category, Grade } from "../../utils/constants";
 
   onMount(() => {
-    getProducts(`${BASE_URL}/protected/product`);
+    axios
+      .get(`${BASE_URL}/protected/product/get`)
+      .then((response) => {
+        console.log(response.data);
+        products = response.data;
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log(error.response.status);
+        if (error.response.status == 404) {
+          showToast("Info", error.response.data.message, "info");
+        }
+      });
   });
 
   let products = [];
@@ -114,7 +127,7 @@
 </script>
 
 <svelte:head>
-  <title>Search</title>
+  <title>DevPro - Product</title>
   <meta name="description" content="Svelte demo app" />
 </svelte:head>
 
@@ -205,40 +218,48 @@
       </div>
     </div>
 
-    <div
-      class="grid xl:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-8 place-items-center"
-    >
-      <Product product="asd" index={1} />
-      <Product product="asd" index={1} />
-      <Product product="asd" index={1} />
-      <Product product="asd" index={1} />
-      <Product product="asd" index={1} />
-      <Product product="asd" index={1} />
-      {#each products as product, index}
-        <Product {product} {index} />
-      {/each}
-    </div>
-
-    <div class="flex justify-center mt-5">
-      <Pagination
-        {pages}
-        large
-        on:previous={previous}
-        on:next={next}
-        icon
-        normalClass="bg-primary-0 rounded-xl text-xl text-semibold text-primary-1"
+    {#if products.length != 0}
+      <div
+        class="grid xl:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-8 place-items-center"
       >
-        <svelte:fragment slot="prev">
-          <span class="sr-only">Previous</span>
-          <ChevronLeftOutline class="w-3 h-3" />
-        </svelte:fragment>
-        <svelte:fragment slot="next">
-          <span class="sr-only">Next</span>
-          <ChevronRightOutline class="w-3 h-3" />
-        </svelte:fragment>
-      </Pagination>
-    </div>
+        <!-- <Product product="asd" index={1} />
+        <Product product="asd" index={1} />
+        <Product product="asd" index={1} />
+        <Product product="asd" index={1} />
+        <Product product="asd" index={1} />
+        <Product product="asd" index={1} /> -->
+        {#each products as product, index}
+          <Product {product} {index} />
+        {/each}
+      </div>
+
+      <div class="flex justify-center mt-5">
+        <Pagination
+          {pages}
+          large
+          on:previous={previous}
+          on:next={next}
+          icon
+          normalClass="bg-primary-0 rounded-xl text-xl text-semibold text-primary-1"
+        >
+          <svelte:fragment slot="prev">
+            <span class="sr-only">Previous</span>
+            <ChevronLeftOutline class="w-3 h-3" />
+          </svelte:fragment>
+          <svelte:fragment slot="next">
+            <span class="sr-only">Next</span>
+            <ChevronRightOutline class="w-3 h-3" />
+          </svelte:fragment>
+        </Pagination>
+      </div>
+    {:else}
+      <div class="my-16 text-4xl text-center w-full">No Products Found</div>
+    {/if}
   </div>
+
+  <ToastContainer let:data>
+    <FlatToast {data} />
+  </ToastContainer>
 </section>
 
 <style>

@@ -3,7 +3,7 @@
   import { ToastContainer, FlatToast } from "svelte-toasts";
   import axios from "axios";
   import { BASE_URL } from "../../utils/constants";
-  import { isAuthenticated, authenticateUser } from "../../utils/auth";
+  import { isAuthenticated } from "../../utils/auth";
   import { showToast } from "../../utils/toast";
 
   onMount(() => {

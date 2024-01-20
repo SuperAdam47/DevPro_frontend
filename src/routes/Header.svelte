@@ -4,7 +4,7 @@
   import axios from "axios";
   import { BASE_URL } from "../utils/constants";
 
-  import { isAuthenticated, authenticateUser } from "../utils/auth";
+  import { isAuthenticated } from "../utils/auth";
   import { page } from "$app/stores";
 
   let auth = false;

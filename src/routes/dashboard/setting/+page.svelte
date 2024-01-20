@@ -14,8 +14,6 @@
         .get(`${BASE_URL}/protected`)
         .then((response) => {
           userProfile = response.data;
-          mapObject(userProfile, generalInformation);
-          console.log(generalInformation);
           console.log(userProfile);
         })
         .catch((error) => {
@@ -32,30 +30,30 @@
     }
   });
 
-  const mapObject = (fromObject, toObject) => {
-    for (let key in fromObject) {
-      toObject[key] = fromObject[key];
-    }
-  };
+  // const mapObject = (fromObject, toObject) => {
+  //   for (let key in fromObject) {
+  //     toObject[key] = fromObject[key];
+  //   }
+  // };
 
   // export let data;
 
   let userProfile = {};
 
-  let generalInformation = {
-    first_name: "",
-    last_name: "",
-    country: "",
-    city: "",
-    address: "",
-    email: "",
-    phoneNumber: "",
-    birthday: "",
-    organization: "",
-    role: "",
-    department: "",
-    zipCode: "",
-  };
+  // let generalInformation = {
+  //   first_name: "",
+  //   last_name: "",
+  //   country: "",
+  //   city: "",
+  //   address: "",
+  //   email: "",
+  //   phone: "",
+  //   birthday: "",
+  //   organization: "",
+  //   role: "",
+  //   department: "",
+  //   zipCode: "",
+  // };
 
   let passwordInformation = {
     currentPassword: "",
@@ -65,24 +63,23 @@
 
   const sendRequest = (url, formData) => {
     axios
-      .post(url, formData)
+      .put(url, formData)
       .then((response) => {
         userProfile = response.data;
         showToast("Success", "Saved Successfully", "success");
       })
       .catch((error) => {
         console.log(error);
-        showToast("Failed", "Failed Request", "error");
+        showToast("Failed", error.response.data.message, "error");
       });
   };
 
   const handleSubmitGeneralInformation = () => {
-    console.log(generalInformation);
-    sendRequest(`${BASE_URL}/user/general`, generalInformation);
+    console.log(userProfile);
+    sendRequest(`${BASE_URL}/protected/update`, userProfile);
   };
   const handleSubmitPasswordInformation = () => {
     console.log(passwordInformation);
-    console.log(generalInformation.first_name);
     sendRequest(`${BASE_URL}/user/password`, passwordInformation);
   };
 </script>
@@ -610,8 +607,7 @@
               id="first_name"
               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="Bonnie"
-              bind:value={generalInformation.first_name}
-              required
+              bind:value={userProfile.first_name}
             />
           </div>
           <div class="col-span-6 sm:col-span-3">
@@ -626,8 +622,7 @@
               id="last_name"
               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="Green"
-              bind:value={generalInformation.last_name}
-              required
+              bind:value={userProfile.last_name}
             />
           </div>
           <div class="col-span-6 sm:col-span-3">
@@ -642,8 +637,7 @@
               id="country"
               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="United States"
-              bind:value={generalInformation.country}
-              required
+              bind:value={userProfile.country}
             />
           </div>
           <div class="col-span-6 sm:col-span-3">
@@ -658,8 +652,7 @@
               id="city"
               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="e.g. San Francisco"
-              bind:value={generalInformation.city}
-              required
+              bind:value={userProfile.city}
             />
           </div>
           <div class="col-span-6 sm:col-span-3">
@@ -674,8 +667,7 @@
               id="address"
               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="e.g. California"
-              bind:value={generalInformation.address}
-              required
+              bind:value={userProfile.address}
             />
           </div>
           <div class="col-span-6 sm:col-span-3">
@@ -690,24 +682,23 @@
               id="email"
               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="example@company.com"
-              bind:value={generalInformation.email}
-              required
+              bind:value={userProfile.email}
+              disabled
             />
           </div>
           <div class="col-span-6 sm:col-span-3">
             <label
-              for="phone-number"
+              for="phone"
               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >Phone Number</label
             >
             <input
-              type="number"
-              name="phone-number"
-              id="phone-number"
+              type="text"
+              name="phone"
+              id="phone"
               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="e.g. +(12)3456 789"
-              bind:value={generalInformation.phoneNumber}
-              required
+              bind:value={userProfile.phone}
             />
           </div>
           <div class="col-span-6 sm:col-span-3">
@@ -722,8 +713,7 @@
               id="birthday"
               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="15/08/1990"
-              bind:value={generalInformation.birthday}
-              required
+              bind:value={userProfile.birthday}
             />
           </div>
           <div class="col-span-6 sm:col-span-3">
@@ -738,8 +728,7 @@
               id="organization"
               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="Company Name"
-              bind:value={generalInformation.organization}
-              required
+              bind:value={userProfile.organization}
             />
           </div>
           <div class="col-span-6 sm:col-span-3">
@@ -753,9 +742,8 @@
               name="role"
               id="role"
               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-              placeholder="React Developer"
-              bind:value={generalInformation.role}
-              required
+              placeholder="Web Developer"
+              bind:value={userProfile.role}
             />
           </div>
           <div class="col-span-6 sm:col-span-3">
@@ -770,8 +758,7 @@
               id="department"
               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="Development"
-              bind:value={generalInformation.department}
-              required
+              bind:value={userProfile.department}
             />
           </div>
           <div class="col-span-6 sm:col-span-3">
@@ -786,8 +773,7 @@
               id="zip-code"
               class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
               placeholder="123456"
-              bind:value={generalInformation.zipCode}
-              required
+              bind:value={userProfile.zipCode}
             />
           </div>
           <div class="col-span-6 sm:col-full">

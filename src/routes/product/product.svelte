@@ -11,8 +11,9 @@
     MessagesOutline,
     FireSolid,
   } from "flowbite-svelte-icons";
+  import { BASE_URL } from "../../utils/constants";
 
-  export let product;
+  export let product = {};
   export let index;
 
   let isHover = false;
@@ -34,7 +35,10 @@
 >
   <div class="w-full relative">
     <div class="w-full">
-      <Img src={productImage} class="rounded-t-xl w-full" />
+      <Img
+        src={`${BASE_URL}/${product.images[0]}`}
+        class="rounded-t-xl w-full aspect-video"
+      />
       <div class="absolute top-1 p-4 flex justify-between w-full">
         <HeartOutline
           class="left-[16px] top-[8px] text-white w-[32px] h-[24px] "
@@ -83,11 +87,13 @@
       </div>
     </div>
   </div>
+  <div class="text-[16px] my-[8px] mx-[16px] font-['hammersmith one']">
+    {product.title}
+  </div>
   <div
     class="text-[13px] my-[8px] mx-[16px] leading-4 font-['hammersmith one'] h-[32px] line-clamp-2"
   >
-    I will design a full website using the necessary tools, including
-    corrections.
+    {product.description}
   </div>
   <div class="p-4 flex justify-between items-center w-full">
     <span class="text-[10px]"> {isHover ? "" : "@kingtran"}</span>

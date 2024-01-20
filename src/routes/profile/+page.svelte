@@ -68,64 +68,69 @@
   import { showToast } from "../../utils/toast";
   import axios from "axios";
   import { BASE_URL } from "../../utils/constants";
+  import { isAuthenticated } from "../../utils/auth";
 
   onMount(() => {
-    axios
-      .get(`${BASE_URL}/profile/get`)
-      .then((response) => {
-        userProfile = response.data;
-        showToast("Success", "Saved Successfully", "success");
-      })
-      .catch((error) => {
-        console.log(error);
-        showToast("Failed", "Failed Request", "error");
-      });
+    if (!isAuthenticated()) {
+      location.href = "/signin";
+    } else {
+      axios
+        .get(`${BASE_URL}/protected`)
+        .then((response) => {
+          userProfile = response.data;
+          skills = userProfile.skills;
+        })
+        .catch((error) => {
+          console.log(typeof error.response.message);
+          if (typeof error.response.data.message === "string") {
+            showToast("Failed", error.response.data.message, "error");
+          } else {
+            showToast("Failed", error.response.data.error, "error");
+          }
+          setTimeout(() => {
+            location.href = "/signin";
+          }, 1000);
+        });
+    }
   });
-
-  function handleVoiceBtn() {
-    alert("You clicked voice button");
-  }
 
   let userProfile = {};
 
-  let aboutMe =
-    "Hey everyone! Thank you for visiting my page. I’m a developer based in USA and I love creating. I work on projects in my free time. Feel to check out my page!";
-  let skills = [
-    "VIDEO",
-    "EDITING",
-    "PHOTOSHOP",
-    "BLENDER",
-    "WRITER CONTENT",
-    "CREATION",
-    "PYTHON",
-    "GYM TRAINER",
-  ];
+  let skills = [];
+  let skillsField = "";
+  let languages = [];
 
-  let languageFlag = {
-    br: {
-      language: "EN",
-      flag: FlagBritain,
-    },
-    po: {
-      language: "PO",
-      flag: FlagPoland,
-    },
-    fr: {
-      language: "FR",
-      flag: FlagFrance,
-    },
+  let isEditable = false;
+
+  const handleToggleEdit = () => {
+    isEditable = true;
+    skills = userProfile.skills;
+    skillsField = skills.join(", ");
   };
 
-  let details = {
-    website: "www.lj.com",
-    phone: "(421)193-3494",
-    location: "San Jose, CA",
-    language: ["EN", "PO", "FR"],
+  const handleCancel = () => {
+    isEditable = false;
+    skills;
+  };
+  const handleSubmit = () => {
+    console.log("handle submit");
+    console.log(userProfile);
+    userProfile.skills = skillsField.split(",").map((item) => item.trim());
+    axios
+      .put(`${BASE_URL}/protected/update`, userProfile)
+      .then((response) => {
+        userProfile = response.data;
+        location.href = "/dashboard/profile";
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    console.log(userProfile);
   };
 </script>
 
 <svelte:head>
-  <title>ACCOUNT PROFILE</title>
+  <title>DevPro - Profile</title>
   <meta name="description" content="Svelte demo app" />
 </svelte:head>
 
@@ -142,11 +147,17 @@
         />
         <div class="my-4">
           <div class="text-[Fjalla One] font-bold text-[40px] tracking-tight">
-            LEWIS HAMILTON
+            {userProfile.full_name}
           </div>
-          <div class="text-[Exo 2] italic text-[24px]">
-            ENGINEER / DEVELOPER
-          </div>
+          {#if userProfile.title}
+            <div class="text-[Exo 2] text-[24px] leading-7">
+              {userProfile.title}
+            </div>
+          {:else}
+            <div
+              class="text-[Exo 2] text-[24px] leading-7 h-[48px] bg-[#282828] rounded-xl"
+            ></div>
+          {/if}
         </div>
         <div class="divide-solid divide-y-[16px]"></div>
       </div>
@@ -154,42 +165,85 @@
         <div class="text-[Fjalla One] font-bold text-[36px] tracking-tight">
           ABOUT ME
         </div>
-
-        <div class="text-[Exo 2] text-[24px] leading-7">
-          {aboutMe}
-        </div>
+        {#if userProfile.about}
+          <div class="text-[Exo 2] text-[24px] leading-7">
+            {userProfile.about}
+          </div>
+        {:else}
+          <div
+            class="text-[Exo 2] text-[24px] leading-7 h-[96px] bg-[#282828] rounded-xl"
+          ></div>
+        {/if}
       </div>
       <div class="py-8">
         <div class="text-[Fjalla One] font-bold text-[36px] tracking-tight">
           SKILLS
         </div>
-
-        <div class="text-[Exo 2] text-[24px] inline">
-          {#each skills as skill, index}
-            <div
-              class="border-2 border-black text-[12px] font-bold rounded-[8px] px-2 py-0.5 mx-1 tracking-tight inline-block"
-              id={index.toString()}
-            >
-              {skill}
-            </div>
-          {/each}
-        </div>
+        {#if skills.length > 0}
+          <div class="text-[Exo 2] text-[24px] inline">
+            {#each skills as skill, index}
+              <div
+                class="border-2 border-black text-[Fjalla One] text-[16px] font-bold rounded-[8px] px-2 py-0.5 mx-1 tracking-tight inline-block"
+                id={index.toString()}
+              >
+                {skill}
+              </div>
+            {/each}
+          </div>
+        {:else}
+          <div
+            class="text-[Exo 2] text-[24px] leading-7 h-[96px] bg-[#282828] rounded-xl"
+          ></div>
+        {/if}
         <div class="divide-solid divide-y-[16px]"></div>
       </div>
       <div class="py-8">
         <div class="text-[Fjalla One] font-bold text-[36px] tracking-tight">
           DETAILS
         </div>
-        <div class="text-[Exo 2] text-[24px] px-4">
+        <div class="text-[Fjalla One] text-[24px] px-4">
           <div class="w-full grid grid-cols-2 text-left">
             <div class="m-1">WEBSITE:</div>
-            <div class="m-1">{details.website}</div>
+            <div class="m-1">
+              {#if userProfile.website_url}
+                <div class="text-[Exo 2] text-[24px] leading-7">
+                  {userProfile.website_url}
+                </div>
+              {:else}
+                <div
+                  class="text-[Exo 2] text-[24px] leading-7 h-[42px] bg-[#282828] rounded-xl"
+                ></div>
+              {/if}
+            </div>
             <div class="m-1">PHONE:</div>
-            <div class="m-1">{details.phone}</div>
+            <div class="m-1">
+              {#if userProfile.phone}
+                <div class="text-[Exo 2] text-[24px] leading-7">
+                  {userProfile.phone}
+                </div>
+              {:else}
+                <div
+                  class="text-[Exo 2] text-[24px] leading-7 h-[42px] bg-[#282828] rounded-xl"
+                ></div>
+              {/if}
+            </div>
             <div class="m-1">LOCATION:</div>
-            <div class="m-1">{details.location}</div>
+            <div class="m-1">
+              {#if userProfile.location}
+                <div class="text-[Exo 2] text-[24px] leading-7">
+                  {userProfile.location}
+                </div>
+              {:else}
+                <div
+                  class="text-[Exo 2] text-[24px] leading-7 h-[42px] bg-[#282828] rounded-xl"
+                ></div>
+              {/if}
+            </div>
             <div class="m-1">LANGUAGE:</div>
             <div class="flex flex-row gap-4 items-center">
+              {#if languages.length > 0}
+                {#each languages as language, index}{/each}
+              {/if}
               <Img src={FlagFrance} class="w-[36px] h-[24px]" />
               <Img src={FlagBritain} class="w-[36px] h-[24px]" />
               <Img src={FlagPoland} class="w-[36px] h-[24px]" />
@@ -258,6 +312,24 @@
               <Img src={svg_photo3} class="w-50 h-50" />
               <div class="overlay">
                 <div class="text">Lewis</div>
+              </div>
+            </div>
+            <div class="imgcontainer m-3">
+              <Img src={svg_photo4} />
+              <div class="overlay">
+                <div class="text">Hello World</div>
+              </div>
+            </div>
+            <div class="imgcontainer m-3">
+              <Img src={svg_photo4} />
+              <div class="overlay">
+                <div class="text">Hello World</div>
+              </div>
+            </div>
+            <div class="imgcontainer m-3">
+              <Img src={svg_photo4} />
+              <div class="overlay">
+                <div class="text">Hello World</div>
               </div>
             </div>
             <div class="imgcontainer m-3">

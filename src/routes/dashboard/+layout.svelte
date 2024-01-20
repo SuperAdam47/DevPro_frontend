@@ -3,11 +3,7 @@
   import axios from "axios";
   import { BASE_URL } from "../../utils/constants";
 
-  import {
-    isAuthenticated,
-    setSession,
-    authenticateUser,
-  } from "../../utils/auth";
+  import { isAuthenticated, setSession } from "../../utils/auth";
   import { Button, Img } from "flowbite-svelte";
   import Sidebar from "./Sidebar.svelte";
   import {
@@ -21,12 +17,6 @@
 
   onMount(() => {
     if (isAuthenticated()) {
-      // console.log(authenticateUser());
-      // responseData = authenticateUser();
-      // if (responseData.success) {
-      //   userProfile = responseData.data;
-      //   console.log(userProfile);
-      // }
       axios
         .get(`${BASE_URL}/protected`)
         .then((response) => {
